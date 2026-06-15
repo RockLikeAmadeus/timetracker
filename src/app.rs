@@ -1,3 +1,5 @@
+use egui::Layout;
+
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
@@ -69,15 +71,11 @@ impl eframe::App for TimeTracker {
         });
 
         egui::CentralPanel::default().show_inside(ui, |ui| {
-            // ui.horizontal(|ui| {
-            //     if ui.button("Alpha Project").clicked() {
-            //         println!("Start");
-            //     }
-            //     if ui.button("Bravo Project").clicked() {
-            //         println!("Start");
-            //     }
-            // });
-            // ui.
+            ui.with_layout(Layout::top_down(egui::Align::Center), |ui| {
+                ui.heading("No Project Selected");
+                ui.heading("0H 0M 0S");
+            });
+            ui.separator();
             ui.scope_builder(ui_builder, |ui| {
                 egui::Grid::new("Projects")
                     .num_columns(2)
@@ -122,9 +120,26 @@ impl TimeTracker {
         if ui.link("Project Alpha").clicked() {
             println!("Start timer!")
         }
+        ui.horizontal(|ui| {
+            if ui.button("START").clicked() {
+                println!("Start timer unending!");
+            }
+            if ui.button("25M").clicked() {
+                println!("Start timer 25 min!");
+            }
+        });
         ui.end_row();
         if ui.link("Project Bravo").clicked() {
             println!("Start timer!")
         }
+        ui.horizontal(|ui| {
+            if ui.button("START").clicked() {
+                println!("Start timer unending!");
+            }
+            if ui.button("25M").clicked() {
+                println!("Start timer 25 min!");
+            }
+        });
+        ui.end_row();
     }
 }
