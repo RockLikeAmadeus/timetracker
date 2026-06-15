@@ -45,29 +45,11 @@ impl eframe::App for TimeTracker {
 
     /// Called each time the UI needs repainting, which may be many times per second.
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
-        let mut ui_builder = egui::UiBuilder::new();
+        let ui_builder = egui::UiBuilder::new();
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
-        egui::Panel::top("top_panel").show_inside(ui, |ui| {
-            // The top panel is often a good place for a menu bar:
-
-            egui::MenuBar::new().ui(ui, |ui| {
-                // NOTE: no File->Quit on web pages!
-                let is_web = cfg!(target_arch = "wasm32");
-                if !is_web {
-                    ui.menu_button("File", |ui| {
-                        if ui.button("Quit").clicked() {
-                            ui.send_viewport_cmd(egui::ViewportCommand::Close);
-                        }
-                    });
-                    ui.add_space(16.0);
-                }
-                ui.with_layout(egui::Layout::bottom_up(egui::Align::RIGHT), |ui| {
-                    egui::widgets::global_theme_preference_buttons(ui);
-                });
-            });
-        });
+        egui::Panel::top("top_panel").show_inside(ui, |ui| self.render_top_panel(ui));
 
         egui::CentralPanel::default().show_inside(ui, |ui| {
             ui.with_layout(Layout::top_down(egui::Align::Center), |ui| {
@@ -112,39 +94,7 @@ impl eframe::App for TimeTracker {
             {
                 println!("{}", &self.work_log_text);
                 self.work_log_text = "".to_owned();
-                // use egui::TextBuffer as _;
-                // let selected_chars = text_cursor_range.as_sorted_char_range();
-                // let selected_text = text.char_range(selected_chars.clone());
-                // let upper_case = selected_text.to_uppercase();
-                // let new_text = if selected_text == upper_case {
-                //     selected_text.to_lowercase()
-                // } else {
-                //     upper_case
-                // };
-                // text.delete_char_range(selected_chars.clone());
-                // text.insert_text(&new_text, selected_chars.start);
             }
-
-
-            // // The central panel the region left after adding TopPanel's and SidePanel's
-            // ui.heading("time tracker");
-
-            // ui.horizontal(|ui| {
-            //     ui.label("Write something: ");
-            //     ui.text_edit_singleline(&mut self.label);
-            // });
-
-            // ui.add(egui::Slider::new(&mut self.value, 0.0..=10.0).text("value"));
-            // if ui.button("Increment").clicked() {
-            //     self.value += 1.0;
-            // }
-
-            // ui.separator();
-
-            // ui.add(egui::github_link_file!(
-            //     "https://github.com/emilk/eframe_template/blob/main/",
-            //     "Source code."
-            // ));
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                 egui::warn_if_debug_build(ui);
@@ -154,6 +104,26 @@ impl eframe::App for TimeTracker {
 }
 
 impl TimeTracker {
+    fn render_top_panel(&mut self, ui: &mut egui::Ui) {
+        // The top panel is often a good place for a menu bar:
+        egui::MenuBar::new().ui(ui, |ui| {
+            // NOTE: no File->Quit on web pages!
+            let is_web = cfg!(target_arch = "wasm32");
+            if !is_web {
+                ui.menu_button("File", |ui| {
+                    if ui.button("Quit").clicked() {
+                        ui.send_viewport_cmd(egui::ViewportCommand::Close);
+                    }
+                });
+                ui.add_space(16.0);
+            }
+            ui.with_layout(egui::Layout::bottom_up(egui::Align::RIGHT), |ui| {
+                egui::widgets::global_theme_preference_buttons(ui);
+            });
+        });
+    }
+
+
     fn render_projects(&mut self, ui: &mut egui::Ui) {
         if ui.link("Project Alpha").clicked() {
             println!("Start timer!")
