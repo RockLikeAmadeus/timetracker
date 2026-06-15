@@ -97,7 +97,7 @@ impl eframe::App for TimeTracker {
                     egui::Atom::custom(clear_id, clear_size)
                         .atom_align(Align2([Align::RIGHT, Align::TOP])),
                 )
-                .horizontal_align(Align::Center)
+                .horizontal_align(Align::LEFT)
                 .vertical_align(Align::TOP)
                 .show(ui);
 
@@ -105,6 +105,24 @@ impl eframe::App for TimeTracker {
                 && ui.place(rect, egui::Button::new("❌")).clicked()
             {
                 self.work_log_text.clear();
+            }
+
+            if output.response.has_focus()
+                && ui.input_mut(|i| i.consume_key(egui::Modifiers::NONE, egui::Key::Enter))
+            {
+                println!("{}", &self.work_log_text);
+                self.work_log_text = "".to_owned();
+                // use egui::TextBuffer as _;
+                // let selected_chars = text_cursor_range.as_sorted_char_range();
+                // let selected_text = text.char_range(selected_chars.clone());
+                // let upper_case = selected_text.to_uppercase();
+                // let new_text = if selected_text == upper_case {
+                //     selected_text.to_lowercase()
+                // } else {
+                //     upper_case
+                // };
+                // text.delete_char_range(selected_chars.clone());
+                // text.insert_text(&new_text, selected_chars.start);
             }
 
 
