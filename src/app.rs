@@ -36,6 +36,7 @@ impl TimeTracker {
 }
 
 impl eframe::App for TimeTracker {
+
     /// Called by the framework to save state before shutdown.
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         eframe::set_value(storage, eframe::APP_KEY, self);
@@ -43,6 +44,7 @@ impl eframe::App for TimeTracker {
 
     /// Called each time the UI needs repainting, which may be many times per second.
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        let mut ui_builder = egui::UiBuilder::new();
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
@@ -67,6 +69,27 @@ impl eframe::App for TimeTracker {
         });
 
         egui::CentralPanel::default().show_inside(ui, |ui| {
+            // ui.horizontal(|ui| {
+            //     if ui.button("Alpha Project").clicked() {
+            //         println!("Start");
+            //     }
+            //     if ui.button("Bravo Project").clicked() {
+            //         println!("Start");
+            //     }
+            // });
+            // ui.
+            ui.scope_builder(ui_builder, |ui| {
+                egui::Grid::new("Projects")
+                    .num_columns(2)
+                    .spacing([40.0, 4.0])
+                    .striped(false)
+                    .show(ui, |ui| {
+                        self.render_projects(ui);
+                    });
+            });
+
+
+
             // // The central panel the region left after adding TopPanel's and SidePanel's
             // ui.heading("time tracker");
 
@@ -91,5 +114,17 @@ impl eframe::App for TimeTracker {
                 egui::warn_if_debug_build(ui);
             });
         });
+    }
+}
+
+impl TimeTracker {
+    fn render_projects(&mut self, ui: &mut egui::Ui) {
+        if ui.link("Project Alpha").clicked() {
+            println!("Start timer!")
+        }
+        ui.end_row();
+        if ui.link("Project Bravo").clicked() {
+            println!("Start timer!")
+        }
     }
 }
