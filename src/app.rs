@@ -48,7 +48,8 @@ impl eframe::App for TimeTracker {
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
         egui::Panel::top("top_panel").show_inside(ui, |ui| self.render_top_panel(ui));
-        egui::CentralPanel::default().show_inside(ui, |ui| self.render_central_panel(ui, builder));
+        egui::Panel::right("right_panel").show_inside(ui, |ui| self.render_right_panel(ui));
+        egui::CentralPanel::default().show_inside(ui, |ui| self.render_central_panel(ui));
     }
 }
 
@@ -70,8 +71,9 @@ impl TimeTracker {
         });
     }
 
-    fn render_central_panel(&mut self, ui: &mut egui::Ui, builder: egui::UiBuilder) {
-             ui.with_layout(Layout::top_down(egui::Align::Center), |ui| {
+    fn render_central_panel(&mut self, ui: &mut egui::Ui) {
+        let builder = egui::UiBuilder::new();
+         ui.with_layout(Layout::top_down(egui::Align::Center), |ui| {
              ui.heading("No Project Selected");
              ui.heading("0H 0M 0S");
          });
@@ -118,6 +120,20 @@ impl TimeTracker {
          ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
              egui::warn_if_debug_build(ui);
          });
+    }
+
+    fn render_right_panel(&mut self, ui: &mut egui::Ui) {
+        let builder = egui::UiBuilder::new();
+        ui.scope_builder(builder, |ui| {
+            egui::Grid::new("Activity")
+                .num_columns(2)
+                .spacing([40.0, 4.0])
+                .striped(false)
+                .show(ui, |ui| {
+                    self.render_projects(ui);
+                });
+        });
+ 
     }
 
     fn render_projects(&mut self, ui: &mut egui::Ui) {
