@@ -1,4 +1,4 @@
-use egui::Layout;
+use egui::{Layout, Align, Align2, AtomExt as _};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -6,9 +6,7 @@ use egui::Layout;
 pub struct TimeTracker {
     // Example stuff:
     label: String,
-
-    #[serde(skip)] // This how you opt-out of serialization of a field
-    value: f32,
+    work_log_text: String,
 }
 
 impl Default for TimeTracker {
@@ -16,7 +14,8 @@ impl Default for TimeTracker {
         Self {
             // Example stuff:
             label: "Hello World!".to_owned(),
-            value: 2.7,
+            work_log_text: String::new(),
+            // value: 2.7,
         }
     }
 }
@@ -76,6 +75,7 @@ impl eframe::App for TimeTracker {
                 ui.heading("0H 0M 0S");
             });
             ui.separator();
+
             ui.scope_builder(ui_builder, |ui| {
                 egui::Grid::new("Projects")
                     .num_columns(2)
@@ -85,7 +85,27 @@ impl eframe::App for TimeTracker {
                         self.render_projects(ui);
                     });
             });
+            ui.separator();
+            
+            let clear_id = egui::Id::new("clear_button");
+            let clear_size = egui::Vec2::splat(ui.spacing().interact_size.y);
 
+            let output = egui::TextEdit::multiline(&mut self.work_log_text)
+                .hint_text("What are you working on?")
+                // Atoms are centered by default, so we need to pass the right align here:
+                .suffix(
+                    egui::Atom::custom(clear_id, clear_size)
+                        .atom_align(Align2([Align::RIGHT, Align::TOP])),
+                )
+                .horizontal_align(Align::Center)
+                .vertical_align(Align::TOP)
+                .show(ui);
+
+            if let Some(rect) = output.response.rect(clear_id)
+                && ui.place(rect, egui::Button::new("❌")).clicked()
+            {
+                self.work_log_text.clear();
+            }
 
 
             // // The central panel the region left after adding TopPanel's and SidePanel's
